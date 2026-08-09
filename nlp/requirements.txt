@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+spacy
+sastrawi
+pydantic
+requests
+PyMuPDF
+python-docx
+elasticsearch
+fpdf2
+sentence-transformers
+torch
+beautifulsoup4
+mysql-connector-python
