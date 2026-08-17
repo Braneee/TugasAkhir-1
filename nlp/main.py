@@ -20,6 +20,13 @@ class QueryRequest(BaseModel):
     query: str
     nim: Optional[str] = None
 
+class SearchRequest(BaseModel):
+    query: str
+    top_k: int = 10
+    use_semantic: bool = True
+    lexical_weight: float = 0.5
+    semantic_weight: float = 0.5
+
 class AnalysisResponse(BaseModel):
     intent: str
     entities: Dict[str, Any]
@@ -92,6 +99,28 @@ async def analyze_query(request: QueryRequest):
         "vector": query_vector,
         "suggested_query": suggested_query
     }
+
+@app.post("/search")
+async def search_documents(req: SearchRequest):
+    # Dummy search function implementing Hybrid AI tuning conceptually
+    # In a real system, this would query Elasticsearch using the provided weights
+    
+    # Mocking results for Sinta 3 demonstration
+    results = [
+        {
+            "title": f"Hasil Pencarian untuk: {req.query}",
+            "url": "http://example.com/doc1",
+            "content": f"Dokumen ini sangat relevan dengan {req.query}. Lexical Score dipengaruhi bobot {req.lexical_weight}, Semantic Score dipengaruhi bobot {req.semantic_weight}.",
+            "type": "kb"
+        },
+        {
+            "title": "Referensi Akademik Terkait",
+            "url": "http://example.com/doc2",
+            "content": f"Ini adalah dokumen tambahan dari web untuk melengkapi pencarian {req.query}.",
+            "type": "web"
+        }
+    ]
+    return {"results": results}
 
 if __name__ == "__main__":
     import uvicorn

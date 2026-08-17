@@ -63,8 +63,20 @@ def crawl_and_index(source):
                 
                 # Update last_sync in DB
                 update_last_sync(source['id'])
+                log_crawler_status(source['url'], 'success', None, 1)
+            else:
+                log_crawler_status(source['url'], 'failed', 'No text extracted', 0)
     except Exception as e:
         print(f"Error crawling {source['url']}: {e}")
+        log_crawler_status(source['url'], 'failed', str(e), 0)
+
+def log_crawler_status(url, status, error, docs):
+    conn = mysql.connector.connect(**DB_CONFIG)
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO crawler_logs (source_url, status, error_message, documents_indexed) VALUES (%s, %s, %s, %s)", (url, status, error, docs))
+    conn.commit()
+    cursor.close()
+    conn.close()
 
 def update_last_sync(source_id):
     conn = mysql.connector.connect(**DB_CONFIG)

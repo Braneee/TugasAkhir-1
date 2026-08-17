@@ -12,18 +12,33 @@ if ($query) {
         try {
             $stmt = $pdo->prepare("INSERT INTO search_logs (nim, query_text) VALUES (?, ?)");
             $stmt->execute([$_SESSION['nim'], $query]);
+            $log_id = $pdo->lastInsertId();
         } catch (Exception $e) {
             // Abaikan error logging
+            $log_id = null;
         }
     }
 
     $start_time = microtime(true);
     
+    // Ambil bobot tuning dari system_config
+    $lex_weight = 0.5;
+    $sem_weight = 0.5;
+    try {
+        $stmt_w = $pdo->query("SELECT setting_key, setting_value FROM system_config WHERE setting_key IN ('lexical_weight', 'semantic_weight')");
+        while ($row = $stmt_w->fetch()) {
+            if ($row['setting_key'] === 'lexical_weight') $lex_weight = (float)$row['setting_value'];
+            if ($row['setting_key'] === 'semantic_weight') $sem_weight = (float)$row['setting_value'];
+        }
+    } catch (Exception $e) {}
+
     // Call FastAPI backend
     $data = array(
         "query" => $query,
         "top_k" => 10,
-        "use_semantic" => true
+        "use_semantic" => true,
+        "lexical_weight" => $lex_weight,
+        "semantic_weight" => $sem_weight
     );
     
     $ch = curl_init('http://localhost:8000/search');
@@ -43,6 +58,14 @@ if ($query) {
     
     $end_time = microtime(true);
     $time_taken = round($end_time - $start_time, 3);
+    
+    // Update result_count
+    if (isset($log_id) && $log_id) {
+        try {
+            $stmt = $pdo->prepare("UPDATE search_logs SET result_count = ? WHERE id = ?");
+            $stmt->execute([count($results), $log_id]);
+        } catch (Exception $e) { }
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -221,6 +244,18 @@ if ($query) {
                                     ?>
                                 </p>
                             </div>
+                            
+                            <!-- Feedback UI -->
+                            <?php if (isset($_SESSION['user_id'])): ?>
+                            <div class="mt-4 pt-4 border-t-2 border-pink-50 flex gap-3">
+                                <button onclick="sendFeedback('<?= addslashes($query) ?>', '<?= addslashes($res['title']) ?>', '<?= isset($res['url']) ? addslashes($res['url']) : '' ?>', 'up', this)" class="px-3 py-1.5 bg-pink-50 text-c_primary rounded-lg border-2 border-pink-100 font-bold text-sm hover:bg-c_primary hover:text-white transition-colors flex items-center gap-1">
+                                    👍 Beruna
+                                </button>
+                                <button onclick="sendFeedback('<?= addslashes($query) ?>', '<?= addslashes($res['title']) ?>', '<?= isset($res['url']) ? addslashes($res['url']) : '' ?>', 'down', this)" class="px-3 py-1.5 bg-pink-50 text-red-400 rounded-lg border-2 border-pink-100 font-bold text-sm hover:bg-red-400 hover:text-white transition-colors flex items-center gap-1">
+                                    👎 Kurang pas
+                                </button>
+                            </div>
+                            <?php endif; ?>
                         </div>
                     <?php endforeach; ?>
                 </div>
@@ -237,5 +272,29 @@ if ($query) {
             </div>
         <?php endif; ?>
     </div>
+
+    <!-- Feedback Script -->
+    <script>
+        function sendFeedback(query, title, url, type, btnElement) {
+            const formData = new FormData();
+            formData.append('query_text', query);
+            formData.append('document_title', title);
+            formData.append('document_url', url);
+            formData.append('feedback_type', type);
+
+            fetch('api/feedback_api.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const parent = btnElement.parentElement;
+                    parent.innerHTML = '<span class="text-c_cta font-bold text-sm">Terima kasih atas feedback-nya! 🎉</span>';
+                }
+            })
+            .catch(err => console.error(err));
+        }
+    </script>
 </body>
 </html>

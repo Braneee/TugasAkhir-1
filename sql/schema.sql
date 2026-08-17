@@ -36,5 +36,33 @@ CREATE TABLE IF NOT EXISTS search_logs (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nim VARCHAR(20) NOT NULL,
     query_text TEXT NOT NULL,
+    result_count INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Table for search feedback (Precision/Recall metric evaluation)
+CREATE TABLE IF NOT EXISTS search_feedback (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    query_text TEXT NOT NULL,
+    document_title VARCHAR(255) NOT NULL,
+    document_url VARCHAR(255) NULL,
+    feedback_type ENUM('up', 'down') NOT NULL,
+    nim VARCHAR(20) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Table for AI Tuning Configuration
+CREATE TABLE IF NOT EXISTS system_config (
+    setting_key VARCHAR(50) PRIMARY KEY,
+    setting_value VARCHAR(255) NOT NULL
+);
+
+-- Table for Web Crawler Logs
+CREATE TABLE IF NOT EXISTS crawler_logs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    source_url VARCHAR(255) NOT NULL,
+    status ENUM('success', 'failed') NOT NULL,
+    error_message TEXT NULL,
+    documents_indexed INT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

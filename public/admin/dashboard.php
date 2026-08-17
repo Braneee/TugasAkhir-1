@@ -99,6 +99,18 @@ $files = is_dir($doc_path) ? array_diff(scandir($doc_path), ['.', '..']) : [];
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>
             Web Sources
         </a>
+        <a href="analytics.php" class="flex items-center gap-3 px-4 py-3 text-pink-700 hover:text-c_primary hover:bg-pink-50 rounded-2xl font-bold transition-colors cursor-pointer border-2 border-transparent hover:border-c_secondary">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" /><path stroke-linecap="round" stroke-linejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" /></svg>
+            Analytics
+        </a>
+        <a href="relevance.php" class="flex items-center gap-3 px-4 py-3 text-pink-700 hover:text-c_primary hover:bg-pink-50 rounded-2xl font-bold transition-colors cursor-pointer border-2 border-transparent hover:border-c_secondary">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" /></svg>
+            Relevance Tuning
+        </a>
+        <a href="crawler_logs.php" class="flex items-center gap-3 px-4 py-3 text-pink-700 hover:text-c_primary hover:bg-pink-50 rounded-2xl font-bold transition-colors cursor-pointer border-2 border-transparent hover:border-c_secondary">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            Crawler Logs
+        </a>
     </div>
     
     <div class="p-6 border-t-4 border-c_secondary">
