@@ -20,7 +20,7 @@ if ($_SESSION['role'] === 'student') {
     }
 }
 
-// Suggested Keywords (Static as discussed)
+// Suggested Keywords
 $suggestions = ["UKT Semester 2", "Nilai Kalkulus", "Prosedur Wisuda", "Cek IPK", "Cara Bayar Biaya Kuliah"];
 ?>
 <!DOCTYPE html>
@@ -29,74 +29,119 @@ $suggestions = ["UKT Semester 2", "Nilai Kalkulus", "Prosedur Wisuda", "Cek IPK"
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search Engine Kampus</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700&family=Varela+Round&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Nunito Sans', 'sans-serif'],
+                        display: ['Varela Round', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#6366f1', // Soft Indigo
+                        primaryHover: '#4f46e5',
+                        background: '#f8fafc', // Slate 50
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        body { background-color: #f8f9fa; }
-        .search-container { max-width: 800px; margin-top: 100px; }
-        .search-box { border-radius: 30px; padding: 15px 25px; font-size: 1.2rem; border: 2px solid #dee2e6; }
-        .search-box:focus { border-color: #0d6efd; box-shadow: none; }
-        .suggestion-badge { border-radius: 20px; padding: 8px 15px; margin: 5px; cursor: pointer; transition: 0.3s; }
-        .suggestion-badge:hover { background-color: #0d6efd !important; color: white !important; }
-        .card { border-radius: 15px; border: none; }
-        .navbar { background-color: #2c3e50; }
+        body { font-family: 'Nunito Sans', sans-serif; background-color: #f8fafc; color: #334155; }
+        h1, h2, h3, h4, h5, h6, .brand-font { font-family: 'Varela Round', sans-serif; }
     </style>
 </head>
-<body>
-<nav class="navbar navbar-expand-lg navbar-dark mb-4">
-    <div class="container">
-        <a class="navbar-brand" href="index.php"><i class="bi bi-search"></i> MVP Kampus Search</a>
-        <div class="navbar-text ms-auto text-white">
-            <?php if ($_SESSION['role'] !== 'guest'): ?>
-                <span class="me-3">Halo, <strong><?php echo htmlspecialchars($_SESSION['name']); ?></strong> <?php echo $_SESSION['nim'] ? "(".htmlspecialchars($_SESSION['nim']).")" : ""; ?></span>
-                <a href="logout.php" class="btn btn-outline-danger btn-sm">Keluar</a>
-            <?php else: ?>
-                <a href="login.php" class="btn btn-primary btn-sm rounded-pill px-4">Login Mahasiswa / Admin</a>
-            <?php endif; ?>
-        </div>
+<body class="min-h-screen flex flex-col relative">
+
+<!-- Floating Navbar -->
+<nav class="absolute top-4 left-4 right-4 bg-white/80 backdrop-blur-md shadow-sm border border-slate-200 rounded-2xl px-6 py-4 flex items-center justify-between z-10 max-w-5xl mx-auto w-full">
+    <a href="index.php" class="flex items-center gap-2 text-primary font-bold text-xl brand-font transition-opacity hover:opacity-80">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        <span>MVP Search</span>
+    </a>
+    
+    <div>
+        <?php if ($_SESSION['role'] !== 'guest'): ?>
+            <div class="flex items-center gap-4 text-sm font-medium">
+                <span class="text-slate-600">Halo, <span class="font-bold text-slate-800"><?php echo htmlspecialchars($_SESSION['name']); ?></span> <?php echo $_SESSION['nim'] ? "(".htmlspecialchars($_SESSION['nim']).")" : ""; ?></span>
+                <a href="logout.php" class="px-4 py-2 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-xl transition-colors duration-200 cursor-pointer">Keluar</a>
+            </div>
+        <?php else: ?>
+            <a href="login.php" class="px-6 py-2 bg-primary text-white hover:bg-primaryHover rounded-xl shadow-sm transition-colors duration-200 font-medium cursor-pointer">Masuk</a>
+        <?php endif; ?>
     </div>
 </nav>
 
-<div class="container search-container text-center">
-    <img src="https://img.icons8.com/clouds/200/search--v1.png" alt="Search Icon" class="mb-3">
-    <h1 class="mb-4 font-weight-bold">Apa yang ingin Anda cari hari ini?</h1>
+<!-- Main Content -->
+<main class="flex-grow flex flex-col items-center justify-center pt-32 pb-16 px-4">
     
-    <form action="results.php" method="GET">
-        <div class="input-group mb-4 shadow-sm rounded-pill overflow-hidden bg-white p-1">
-            <input type="text" name="q" class="form-control search-box border-0" placeholder="Ketik pertanyaan Anda di sini..." required autofocus>
-            <button class="btn btn-primary px-5 rounded-pill" type="submit">Cari</button>
+    <!-- Hero Image (SVG instead of raster) -->
+    <div class="mb-8 p-4 bg-indigo-50 rounded-full text-indigo-500 shadow-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8 16l2.879-2.879m0 0a3 3 0 104.243-4.242 3 3 0 00-4.243 4.242zM21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+    </div>
+    
+    <h1 class="text-3xl md:text-5xl brand-font text-slate-900 mb-8 text-center leading-tight">Apa yang ingin Anda <br> <span class="text-primary">cari</span> hari ini?</h1>
+    
+    <form action="results.php" method="GET" class="w-full max-w-2xl relative group">
+        <div class="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors duration-200">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
         </div>
+        <input type="text" name="q" class="w-full pl-16 pr-32 py-5 rounded-2xl bg-white border-2 border-slate-100 shadow-sm text-lg focus:outline-none focus:border-primary/50 focus:ring-4 focus:ring-primary/10 transition-all duration-300 text-slate-700 placeholder-slate-400" placeholder="Ketik pertanyaan Anda di sini..." required autofocus>
+        <button type="submit" class="absolute right-3 top-3 bottom-3 px-8 bg-primary hover:bg-primaryHover text-white font-medium rounded-xl shadow-sm transition-colors duration-200 cursor-pointer">Cari</button>
     </form>
 
-    <div class="mt-4">
-        <p class="text-muted mb-2">Pencarian populer:</p>
-        <?php foreach ($suggestions as $sug): ?>
-            <a href="results.php?q=<?php echo urlencode($sug); ?>" class="badge bg-white text-dark border suggestion-badge text-decoration-none shadow-sm">
-                <?php echo $sug; ?>
-            </a>
-        <?php endforeach; ?>
+    <div class="mt-8 max-w-2xl w-full text-center">
+        <p class="text-sm font-medium text-slate-500 mb-4 uppercase tracking-wider">Pencarian Populer</p>
+        <div class="flex flex-wrap justify-center gap-3">
+            <?php foreach ($suggestions as $sug): ?>
+                <a href="results.php?q=<?php echo urlencode($sug); ?>" class="px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-full text-sm font-medium hover:border-primary hover:text-primary hover:shadow-sm transition-all duration-200 cursor-pointer">
+                    <?php echo $sug; ?>
+                </a>
+            <?php endforeach; ?>
+        </div>
     </div>
 
     <?php if (!empty($history)): ?>
-    <div class="mt-5 text-start">
-        <div class="card shadow-sm p-4">
-            <h5 class="mb-3"><i class="bi bi-clock-history me-2 text-primary"></i>Riwayat Pencarian Terakhir</h5>
-            <div class="list-group list-group-flush">
+    <div class="mt-16 w-full max-w-xl">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 overflow-hidden">
+            <h3 class="brand-font text-lg text-slate-800 mb-4 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Riwayat Pencarian
+            </h3>
+            <div class="space-y-2">
                 <?php foreach ($history as $h): ?>
-                    <a href="results.php?q=<?php echo urlencode($h); ?>" class="list-group-item list-group-item-action border-0 px-0 py-2 text-muted">
-                        <i class="bi bi-chevron-right small me-2"></i> <?php echo htmlspecialchars($h); ?>
+                    <a href="results.php?q=<?php echo urlencode($h); ?>" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 text-slate-600 transition-colors duration-200 cursor-pointer group">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-300 group-hover:text-primary transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                        </svg>
+                        <span class="font-medium"><?php echo htmlspecialchars($h); ?></span>
                     </a>
                 <?php endforeach; ?>
             </div>
         </div>
     </div>
     <?php endif; ?>
-</div>
+    
+</main>
 
-<footer class="mt-5 text-center text-muted pb-4">
-    <small>&copy; 2026 MVP Search Engine Kampus with NLP</small>
+<footer class="py-8 text-center text-slate-400 text-sm">
+    <p>&copy; 2026 MVP Search Engine Kampus with NLP</p>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

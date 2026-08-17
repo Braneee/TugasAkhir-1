@@ -19,12 +19,12 @@ if (isset($_FILES['kb_file'])) {
     if (in_array($ext, $allowed)) {
         $target = $doc_dir . DIRECTORY_SEPARATOR . basename($file['name']);
         if (move_uploaded_file($file['tmp_name'], $target)) {
-            $message = "<div class='alert alert-success'>File <b>" . htmlspecialchars($file['name']) . "</b> berhasil diupload!</div>";
+            $message = "<div class='mb-6 p-4 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl flex items-center gap-3'><svg xmlns=\"http://www.w3.org/2000/svg\" class=\"h-5 w-5 flex-shrink-0\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z\" /></svg><span>File <b>" . htmlspecialchars($file['name']) . "</b> berhasil diupload!</span></div>";
         } else {
-            $message = "<div class='alert alert-danger'>Gagal mengupload file.</div>";
+            $message = "<div class='mb-6 p-4 bg-rose-50 text-rose-700 border border-rose-200 rounded-xl flex items-center gap-3'><svg xmlns=\"http://www.w3.org/2000/svg\" class=\"h-5 w-5 flex-shrink-0\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z\" /></svg><span>Gagal mengupload file.</span></div>";
         }
     } else {
-        $message = "<div class='alert alert-warning'>Format file tidak didukung. Gunakan PDF atau DOCX.</div>";
+        $message = "<div class='mb-6 p-4 bg-amber-50 text-amber-700 border border-amber-200 rounded-xl flex items-center gap-3'><svg xmlns=\"http://www.w3.org/2000/svg\" class=\"h-5 w-5 flex-shrink-0\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z\" /></svg><span>Format file tidak didukung. Gunakan PDF atau DOCX.</span></div>";
     }
 }
 
@@ -34,20 +34,16 @@ if (isset($_GET['delete'])) {
     $target = $doc_dir . DIRECTORY_SEPARATOR . $file_to_delete;
     if (file_exists($target)) {
         if (unlink($target)) {
-            $message = "<div class='alert alert-success'>File <b>" . htmlspecialchars($file_to_delete) . "</b> berhasil dihapus!</div>";
+            $message = "<div class='mb-6 p-4 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl flex items-center gap-3'><svg xmlns=\"http://www.w3.org/2000/svg\" class=\"h-5 w-5 flex-shrink-0\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z\" /></svg><span>File <b>" . htmlspecialchars($file_to_delete) . "</b> berhasil dihapus!</span></div>";
         } else {
-            $message = "<div class='alert alert-danger'>Gagal menghapus file.</div>";
+            $message = "<div class='mb-6 p-4 bg-rose-50 text-rose-700 border border-rose-200 rounded-xl flex items-center gap-3'><svg xmlns=\"http://www.w3.org/2000/svg\" class=\"h-5 w-5 flex-shrink-0\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z\" /></svg><span>Gagal menghapus file.</span></div>";
         }
     }
 }
 
 // 3. Handle Sync (Update Index)
 if (isset($_POST['sync'])) {
-    // Jalankan script indexing Python
-    // Pastikan python terinstall dan ada di PATH
-    // Path script harus absolut atau relatif dari file PHP ini
     $script_path = realpath(__DIR__ . "/../../scripts/indexer.py");
-    
     if ($script_path) {
         $command = "python \"$script_path\" 2>&1";
         $sync_output = shell_exec($command);
@@ -78,151 +74,227 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sync Knowledgebase - MVP Search</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700&family=Varela+Round&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Nunito Sans', 'sans-serif'],
+                        display: ['Varela Round', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#6366f1', 
+                        primaryHover: '#4f46e5',
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        .sidebar { background-color: #2c3e50; min-height: 100vh; color: white; }
-        .sidebar a { color: #bdc3c7; text-decoration: none; padding: 10px 15px; display: block; }
-        .sidebar a:hover, .sidebar a.active { color: white; background-color: #34495e; }
-        pre { background-color: #212529; color: #00ff00; padding: 15px; border-radius: 8px; font-size: 0.85rem; }
+        body { font-family: 'Nunito Sans', sans-serif; background-color: #f8fafc; color: #334155; }
+        .brand-font { font-family: 'Varela Round', sans-serif; }
     </style>
 </head>
-<body>
-<div class="container-fluid">
-    <div class="row">
-        <!-- SIDEBAR -->
-        <div class="col-md-2 sidebar p-0 d-none d-md-block">
-            <div class="p-4 text-center">
-                <h4><i class="bi bi-gear-fill"></i> Admin Panel</h4>
+<body class="flex h-screen overflow-hidden bg-slate-50">
+
+<!-- SIDEBAR -->
+<aside class="w-64 bg-slate-900 text-slate-300 hidden md:flex flex-col shadow-xl z-20">
+    <div class="p-6 flex items-center gap-3 text-white border-b border-slate-800">
+        <div class="p-2 bg-primary rounded-xl text-white">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+        </div>
+        <span class="brand-font font-bold text-xl tracking-wide">Admin Panel</span>
+    </div>
+    
+    <div class="flex-grow py-6 px-4 space-y-2">
+        <a href="dashboard.php" class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl font-medium transition-colors cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+            Dashboard
+        </a>
+        <a href="users.php" class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl font-medium transition-colors cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+            Manajemen User
+        </a>
+        <a href="sync.php" class="flex items-center gap-3 px-4 py-3 bg-primary text-white rounded-xl font-medium shadow-sm cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+            Knowledgebase
+        </a>
+        <a href="web_sources.php" class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl font-medium transition-colors cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>
+            Web Sources
+        </a>
+    </div>
+    
+    <div class="p-6 border-t border-slate-800">
+        <a href="../logout.php" class="flex items-center gap-3 px-4 py-3 text-rose-400 hover:text-rose-300 hover:bg-slate-800 rounded-xl font-medium transition-colors cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+            Logout
+        </a>
+    </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="flex-grow flex flex-col h-screen overflow-y-auto">
+    <!-- Topbar Mobile -->
+    <div class="md:hidden bg-white shadow-sm border-b border-slate-200 p-4 flex justify-between items-center sticky top-0 z-10">
+        <span class="brand-font font-bold text-xl text-slate-800">Admin Panel</span>
+        <a href="../logout.php" class="text-rose-500 font-medium">Logout</a>
+    </div>
+
+    <div class="p-8 max-w-7xl mx-auto w-full">
+        <h2 class="text-3xl font-bold text-slate-800 mb-8 brand-font">Manajemen Knowledgebase</h2>
+        
+        <?php echo $message; ?>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2">
+                <!-- 1. FILE LIST (Read & Delete) -->
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+                    <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                        <h3 class="brand-font font-bold text-slate-800 text-lg flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                            Daftar Dokumen
+                        </h3>
+                        <span class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                            Total: <?php echo count(glob($doc_dir . "/*.{pdf,docx}", GLOB_BRACE)); ?>
+                        </span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm text-slate-600">
+                            <thead class="bg-slate-50 text-slate-500 font-semibold uppercase text-xs tracking-wider border-b border-slate-100">
+                                <tr>
+                                    <th class="px-6 py-4">Nama File</th>
+                                    <th class="px-6 py-4">Ukuran</th>
+                                    <th class="px-6 py-4 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <?php 
+                                $files = glob($doc_dir . "/*.{pdf,docx}", GLOB_BRACE);
+                                if (empty($files)): ?>
+                                    <tr><td colspan="3" class="px-6 py-8 text-center text-slate-400">Belum ada dokumen yang diupload.</td></tr>
+                                <?php else: 
+                                    foreach ($files as $f): 
+                                        $name = basename($f);
+                                        $size = round(filesize($f) / 1024, 2);
+                                        $ext = pathinfo($name, PATHINFO_EXTENSION);
+                                ?>
+                                    <tr class="hover:bg-slate-50/50 transition-colors">
+                                        <td class="px-6 py-4 flex items-center gap-3 font-medium text-slate-800">
+                                            <?php if ($ext == 'pdf'): ?>
+                                                <div class="p-2 bg-rose-50 text-rose-500 rounded-lg"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg></div>
+                                            <?php else: ?>
+                                                <div class="p-2 bg-blue-50 text-blue-500 rounded-lg"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg></div>
+                                            <?php endif; ?>
+                                            <?php echo htmlspecialchars($name); ?>
+                                        </td>
+                                        <td class="px-6 py-4"><?php echo $size; ?> KB</td>
+                                        <td class="px-6 py-4 text-center">
+                                            <a href="?delete=<?php echo urlencode($name); ?>" class="inline-flex items-center justify-center p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer" onclick="return confirm('Hapus file ini?')">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-            <hr class="mx-3">
-            <a href="dashboard.php"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
-            <a href="users.php"><i class="bi bi-people me-2"></i> Manajemen User</a>
-            <a href="sync.php" class="active"><i class="bi bi-file-earmark-text me-2"></i> Knowledgebase</a>
-            <a href="web_sources.php"><i class="bi bi-globe me-2"></i> Web Sources</a>
-            <hr class="mx-3">
-            <a href="../logout.php" class="text-danger"><i class="bi bi-box-arrow-left me-2"></i> Logout</a>
+
+            <div class="lg:col-span-1 space-y-6">
+                <!-- 2. UPLOAD FORM (Create) -->
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+                    <div class="px-6 py-5 border-b border-slate-100 bg-slate-50/50">
+                        <h3 class="brand-font font-bold text-slate-800 text-lg flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+                            Upload Dokumen
+                        </h3>
+                    </div>
+                    <div class="p-6">
+                        <form method="POST" enctype="multipart/form-data" class="space-y-4">
+                            <div>
+                                <input type="file" name="kb_file" class="w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer" required>
+                                <p class="text-xs text-slate-400 mt-2">Hanya file .pdf dan .docx</p>
+                            </div>
+                            <button type="submit" class="w-full py-3 mt-2 bg-primary hover:bg-primaryHover text-white rounded-xl font-bold shadow-sm transition-colors duration-200 cursor-pointer">
+                                Upload Sekarang
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- 3. SYNC BUTTON (Update Index) -->
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden text-center">
+                    <div class="p-6">
+                        <div class="inline-flex p-3 bg-slate-50 rounded-full text-slate-400 mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                        </div>
+                        <h3 class="brand-font font-bold text-slate-800 text-lg mb-2">Sinkronisasi Index</h3>
+                        
+                        <div class="mb-4">
+                            <?php if ($es_status): ?>
+                                <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                    Elasticsearch Online
+                                </span>
+                            <?php else: ?>
+                                <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-700">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                    Elasticsearch Offline
+                                </span>
+                            <?php endif; ?>
+                        </div>
+                        
+                        <p class="text-xs text-slate-500 mb-6">Jalankan proses ini setelah menambah/menghapus file agar pencarian terupdate dengan benar.</p>
+                        
+                        <form method="POST">
+                            <button type="submit" name="sync" class="w-full py-3 bg-slate-800 hover:bg-slate-900 text-white rounded-xl font-bold shadow-sm transition-colors duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed" <?php echo !$es_status ? 'disabled' : ''; ?>>
+                                Jalankan Sync
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- MAIN CONTENT -->
-        <div class="col-md-10 bg-light p-4">
-            <nav aria-label="breadcrumb">
-              <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="dashboard.php">Dashboard</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Knowledgebase Sync</li>
-              </ol>
-            </nav>
-
-            <h2 class="mb-4">Manajemen Knowledgebase</h2>
-            
-            <?php echo $message; ?>
-
-            <div class="row">
-                <div class="col-md-8">
-                    <!-- 1. FILE LIST (Read & Delete) -->
-                    <div class="card shadow-sm border-0 p-4 mb-4">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h5 class="mb-0"><i class="bi bi-file-earmark-text me-2"></i> Daftar Dokumen</h5>
-                            <span class="badge bg-light text-dark">Total: <?php echo count(glob($doc_dir . "/*.{pdf,docx}", GLOB_BRACE)); ?> Dokumen</span>
-                        </div>
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Nama File</th>
-                                        <th>Ukuran</th>
-                                        <th class="text-center">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php 
-                                    $files = glob($doc_dir . "/*.{pdf,docx}", GLOB_BRACE);
-                                    if (empty($files)): ?>
-                                        <tr><td colspan="3" class="text-center text-muted py-4">Belum ada dokumen yang diupload.</td></tr>
-                                    <?php else: 
-                                        foreach ($files as $f): 
-                                            $name = basename($f);
-                                            $size = round(filesize($f) / 1024, 2);
-                                    ?>
-                                        <tr>
-                                            <td>
-                                                <i class="bi <?php echo (pathinfo($name, PATHINFO_EXTENSION) == 'pdf' ? 'bi-file-pdf text-danger' : 'bi-file-word text-primary'); ?> me-2"></i>
-                                                <?php echo htmlspecialchars($name); ?>
-                                            </td>
-                                            <td><?php echo $size; ?> KB</td>
-                                            <td class="text-center">
-                                                <a href="?delete=<?php echo urlencode($name); ?>" class="btn btn-outline-danger btn-sm" onclick="return confirm('Hapus file ini?')">
-                                                    <i class="bi bi-trash"></i> Hapus
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    <?php endforeach; endif; ?>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+        <!-- 4. OUTPUT LOGS -->
+        <div class="mt-8">
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+                <div class="px-6 py-5 border-b border-slate-100 bg-slate-50/50">
+                    <h3 class="brand-font font-bold text-slate-800 text-lg flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                        Output Log Sinkronisasi
+                    </h3>
                 </div>
-
-                <div class="col-md-4">
-                    <!-- 2. UPLOAD FORM (Create) -->
-                    <div class="card shadow-sm border-0 p-4 mb-4">
-                        <h5><i class="bi bi-cloud-upload me-2"></i> Upload Dokumen</h5>
-                        <form method="POST" enctype="multipart/form-data">
-                            <div class="mb-3 mt-3">
-                                <input class="form-control" type="file" name="kb_file" required>
-                                <small class="text-muted">Hanya file .pdf dan .docx</small>
-                            </div>
-                            <button type="submit" class="btn btn-primary w-100">
-                                <i class="bi bi-upload me-2"></i> Upload Sekarang
-                            </button>
-                        </form>
-                    </div>
-
-                    <!-- 3. SYNC BUTTON (Update Index) -->
-                    <div class="card shadow-sm border-0 p-4 mb-4">
-                        <h5><i class="bi bi-arrow-repeat me-2"></i> Sinkronisasi Index</h5>
-                        <div class="mt-2 mb-3">
-                            <?php if ($es_status): ?>
-                                <span class="badge bg-success p-2 w-100"><i class="bi bi-check-circle me-1"></i> Elasticsearch Online</span>
-                            <?php else: ?>
-                                <span class="badge bg-danger p-2 w-100"><i class="bi bi-x-circle me-1"></i> Elasticsearch Offline</span>
-                            <?php endif; ?>
+                <div class="p-6">
+                    <?php if ($sync_output): ?>
+                        <div class="bg-slate-900 rounded-xl p-4 overflow-x-auto">
+                            <pre class="text-emerald-400 font-mono text-sm leading-relaxed"><?php echo htmlspecialchars($sync_output); ?></pre>
                         </div>
-                        <p class="text-muted small">Jalankan ini setelah menambah/menghapus file agar pencarian terupdate.</p>
-                        <form method="POST">
-                            <button type="submit" name="sync" class="btn btn-dark btn-lg w-100" <?php echo !$es_status ? 'disabled' : ''; ?>>
-                                <i class="bi bi-play-fill me-1"></i> Jalankan Sync
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 4. OUTPUT LOGS -->
-            <div class="row mt-2">
-                <div class="col-12">
-                    <div class="card shadow-sm border-0 p-4">
-                        <h5>Output Log Sinkronisasi</h5>
-                        <?php if ($sync_output): ?>
-                            <pre class="mt-3"><?php echo htmlspecialchars($sync_output); ?></pre>
-                            <?php if ($status === 'success'): ?>
-                                <div class="alert alert-success py-2 mt-2 small">
-                                    <i class="bi bi-check-lg"></i> Proses selesai! Data di Elasticsearch telah diperbarui.
-                                </div>
-                            <?php endif; ?>
-                        <?php else: ?>
-                            <div class="text-center text-muted p-5">
-                                <i class="bi bi-terminal display-4"></i>
-                                <p class="mt-2">Output sinkronisasi akan muncul di sini.</p>
+                        <?php if ($status === 'success'): ?>
+                            <div class="mt-4 p-3 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg flex items-center gap-2 text-sm font-medium">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                Proses selesai! Data di Elasticsearch telah diperbarui.
                             </div>
                         <?php endif; ?>
-                    </div>
+                    <?php else: ?>
+                        <div class="text-center text-slate-400 py-10 border-2 border-dashed border-slate-200 rounded-xl">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-3 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                            <p>Output sinkronisasi akan muncul di sini.</p>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
-    </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    </div>
+</main>
+
 </body>
 </html>
