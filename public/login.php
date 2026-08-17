@@ -1,46 +1,46 @@
 <?php
-require_once 'api/session.php';
 require_once 'api/config.php';
+require_once 'api/session.php';
+
+// Jika sudah login, langsung ke index
+if (isset($_SESSION['user_id'])) {
+    header('Location: index.php');
+    exit;
+}
+
+$error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'] ?? '';
     $password = $_POST['password'] ?? '';
 
-    try {
-        $stmt = $pdo->prepare("SELECT * FROM users WHERE username = ?");
-        $stmt->execute([$username]);
-        $user = $stmt->fetch();
+    if (!empty($username) && !empty($password)) {
+        try {
+            $stmt = $pdo->prepare("SELECT * FROM users WHERE username = ?");
+            $stmt->execute([$username]);
+            $user = $stmt->fetch();
 
-        if ($user && password_verify($password, $user['password'])) {
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['username'] = $user['username'];
-            $_SESSION['role'] = $user['role'];
-            $_SESSION['nim'] = $user['nim'];
-            $_SESSION['name'] = $user['name'];
-            
-            if ($user['role'] === 'admin') {
-                header('Location: admin/dashboard.php');
+            if ($user && password_verify($password, $user['password'])) {
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['role'] = $user['role'];
+                $_SESSION['name'] = $user['name'];
+                $_SESSION['nim'] = $user['nim'];
+                
+                if ($user['role'] === 'admin') {
+                    header('Location: admin/dashboard.php');
+                } else {
+                    header('Location: index.php');
+                }
+                exit;
             } else {
-                header('Location: index.php');
+                $error = 'Username atau password salah!';
             }
-            exit;
-        } else {
-            $error = "Username atau password salah!";
+        } catch (Exception $e) {
+            $error = 'Terjadi kesalahan sistem.';
         }
-    } catch (Exception $e) {
-        $error = "Terjadi kesalahan sistem.";
+    } else {
+        $error = 'Mohon isi username dan password.';
     }
-}
-
-// Handle Guest Login
-if (isset($_GET['action']) && $_GET['action'] === 'guest') {
-    $_SESSION['user_id'] = 0;
-    $_SESSION['username'] = 'guest';
-    $_SESSION['role'] = 'guest';
-    $_SESSION['nim'] = null;
-    $_SESSION['name'] = 'Tamu Umum';
-    header('Location: index.php');
-    exit;
 }
 ?>
 <!DOCTYPE html>
@@ -48,10 +48,10 @@ if (isset($_GET['action']) && $_GET['action'] === 'guest') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - MVP Search Engine Kampus</title>
+    <title>Login - CUAN Search Engine</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700&family=Varela+Round&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&family=Varela+Round&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
@@ -61,75 +61,95 @@ if (isset($_GET['action']) && $_GET['action'] === 'guest') {
                         display: ['Varela Round', 'sans-serif'],
                     },
                     colors: {
-                        primary: '#6366f1', 
-                        primaryHover: '#4f46e5',
+                        c_bg: '#FDF2F8',
+                        c_primary: '#F472B6',
+                        c_primary_dark: '#DB2777',
+                        c_secondary: '#FBCFE8',
+                        c_text: '#9D174D',
+                        c_cta: '#22C55E',
+                        c_cta_dark: '#16A34A',
+                    },
+                    boxShadow: {
+                        'clay-card': '0 8px 0 0 #FBCFE8',
+                        'clay-btn': '0 4px 0 0 #DB2777',
+                        'clay-input': 'inset 0 4px 0 0 rgba(0,0,0,0.05)',
                     }
                 }
             }
         }
     </script>
     <style>
-        body { font-family: 'Nunito Sans', sans-serif; background-color: #f8fafc; color: #334155; }
+        body { font-family: 'Nunito Sans', sans-serif; background-color: #FDF2F8; color: #9D174D; }
         .brand-font { font-family: 'Varela Round', sans-serif; }
+        
+        .clay-btn { transition: all 0.15s ease-out; }
+        .clay-btn:active { transform: translateY(4px); box-shadow: none !important; }
+        .clay-input {
+            transition: all 0.2s ease-out;
+        }
+        .clay-input:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 0 0 #F472B6 !important;
+            border-color: #F472B6;
+        }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center bg-slate-50 p-4">
+<body class="min-h-screen flex items-center justify-center relative p-4 overflow-hidden">
 
-<div class="max-w-md w-full">
-    <!-- Back Button -->
-    <a href="index.php" class="inline-flex items-center gap-2 text-slate-500 hover:text-primary transition-colors duration-200 mb-8 cursor-pointer font-medium">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-        </svg>
-        Kembali ke Beranda
-    </a>
+    <!-- Decorative blobs -->
+    <div class="absolute top-1/4 left-1/4 w-48 h-48 bg-c_secondary rounded-full mix-blend-multiply filter blur-2xl opacity-70 animate-pulse"></div>
+    <div class="absolute bottom-1/4 right-1/4 w-64 h-64 bg-pink-300 rounded-full mix-blend-multiply filter blur-2xl opacity-70 animate-pulse" style="animation-delay: 2s;"></div>
 
-    <!-- Login Card -->
-    <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
-        <div class="px-8 pt-10 pb-8 text-center">
-            <div class="inline-flex items-center justify-center p-3 bg-indigo-50 rounded-2xl text-primary mb-6">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+    <div class="w-full max-w-md z-10">
+        <!-- Back to Home -->
+        <a href="index.php" class="inline-flex items-center gap-2 text-c_primary font-bold hover:text-c_primary_dark mb-6 transition-colors bg-white px-4 py-2 rounded-xl border-2 border-pink-200 shadow-[0_2px_0_0_#FBCFE8]">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+            Kembali ke Beranda
+        </a>
+
+        <!-- Login Card -->
+        <div class="bg-white border-4 border-c_secondary rounded-3xl p-8 shadow-clay-card relative">
+            <div class="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-c_primary border-4 border-c_primary_dark rounded-2xl w-20 h-20 flex items-center justify-center shadow-clay-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
             </div>
-            <h2 class="brand-font text-2xl font-bold text-slate-900 mb-2">Selamat Datang!</h2>
-            <p class="text-slate-500 text-sm">Silakan login untuk mengakses fitur lengkap.</p>
-        </div>
 
-        <div class="px-8 pb-10">
-            <?php if (isset($error)): ?>
-                <div class="bg-rose-50 text-rose-600 text-sm p-4 rounded-xl mb-6 flex items-start gap-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span><?php echo $error; ?></span>
+            <div class="text-center mt-8 mb-8">
+                <h2 class="text-3xl font-bold brand-font text-c_text">Selamat Datang!</h2>
+                <p class="text-pink-400 font-semibold mt-2">Login ke CUAN Search Engine</p>
+            </div>
+
+            <?php if ($error): ?>
+                <div class="mb-6 p-4 bg-rose-50 border-2 border-rose-200 rounded-2xl flex items-center gap-3 text-rose-600 font-bold shadow-[0_2px_0_0_#FECDD3]">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                    <span><?= htmlspecialchars($error) ?></span>
                 </div>
             <?php endif; ?>
 
             <form method="POST" class="space-y-5">
                 <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-2">NIM / Username</label>
-                    <input type="text" name="username" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-200 text-slate-700" placeholder="Masukkan NIM atau username" required autofocus>
+                    <label class="block text-sm font-bold text-c_text mb-2 pl-1">Username</label>
+                    <input type="text" name="username" class="clay-input w-full px-5 py-4 rounded-2xl bg-slate-50 border-2 border-slate-200 text-c_text font-bold focus:outline-none placeholder-slate-400 shadow-[inset_0_4px_0_0_rgba(0,0,0,0.05)]" placeholder="Masukkan username..." required>
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-2">Password</label>
-                    <input type="password" name="password" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-200 text-slate-700" placeholder="••••••••" required>
+                    <label class="block text-sm font-bold text-c_text mb-2 pl-1">Password</label>
+                    <input type="password" name="password" class="clay-input w-full px-5 py-4 rounded-2xl bg-slate-50 border-2 border-slate-200 text-c_text font-bold focus:outline-none placeholder-slate-400 shadow-[inset_0_4px_0_0_rgba(0,0,0,0.05)]" placeholder="Masukkan password..." required>
                 </div>
-                <button type="submit" class="w-full py-3 mt-4 bg-primary hover:bg-primaryHover text-white rounded-xl font-bold shadow-sm transition-colors duration-200 cursor-pointer">
+                
+                <button type="submit" class="clay-btn w-full bg-c_primary text-white border-2 border-c_primary_dark shadow-clay-btn py-4 rounded-2xl font-extrabold text-lg mt-4 cursor-pointer flex justify-center items-center gap-2">
                     Masuk Sekarang
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
                 </button>
             </form>
         </div>
         
-        <div class="bg-slate-50 px-8 py-5 border-t border-slate-100 text-center">
-            <p class="text-xs text-slate-500 leading-relaxed">
-                <span class="font-semibold text-slate-700">Demo Akun:</span><br>
-                Mahasiswa: <code class="bg-slate-200 px-1 py-0.5 rounded text-slate-700">2024001</code> (Pass: password123)<br>
-                Admin: <code class="bg-slate-200 px-1 py-0.5 rounded text-slate-700">admin</code> (Pass: admin123)
+        <div class="text-center mt-8">
+            <p class="text-pink-400 font-bold text-sm">
+                Hubungi Admin jika belum memiliki akun.
             </p>
         </div>
     </div>
-</div>
 
 </body>
 </html>
