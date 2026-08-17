@@ -48,7 +48,7 @@ if (isset($_GET['delete'])) {
 }
 
 // Fetch Users
-$stmt = $pdo->query("SELECT id, username, role, name, nim, created_at FROM users ORDER BY created_at DESC");
+$stmt = $pdo->query("SELECT id, username, role, name, nim FROM users ORDER BY id DESC");
 $users = $stmt->fetchAll();
 ?>
 <!DOCTYPE html>
