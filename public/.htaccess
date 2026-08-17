@@ -8,8 +8,8 @@ RewriteRule ^([^\.]+)$ $1.php [NC,L]
 
 # 2. Redirect permanen dari .php ke non-php (SEO friendly)
 # Misal: User ngetik manual /login.php akan dilempar ke /login
-RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s/+(.+)\.php [NC]
-RewriteRule ^(.+)\.php$ /$1 [R=301,L]
+# RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s/+(.+)\.php [NC]
+# RewriteRule ^(.+)\.php$ /$1 [R=301,L]
 
 # 3. Proteksi folder sensitif
 RewriteRule ^(api|sql|scripts|nlp)/ - [F,L]
