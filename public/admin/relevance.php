@@ -96,16 +96,21 @@ try {
         }
     </style>
 </head>
-<body class="bg-c_bg min-h-screen p-8 text-c_text">
+<body class="flex h-screen overflow-hidden bg-c_bg relative">
 
-    <div class="max-w-3xl mx-auto">
+<?php include 'sidebar.php'; ?>
+
+<!-- MAIN CONTENT -->
+<main class="flex-grow flex flex-col h-screen overflow-y-auto relative z-10">
+    <!-- Topbar Mobile -->
+    <div class="md:hidden bg-white border-b-4 border-c_secondary p-4 flex justify-between items-center sticky top-0 z-30">
+        <span class="brand-font font-bold text-xl text-c_primary">Admin Panel</span>
+        <a href="../logout.php" class="text-rose-500 font-bold">Logout</a>
+    </div>
+
+    <div class="p-8 max-w-7xl mx-auto w-full">
         <!-- Header -->
         <div class="flex items-center gap-4 mb-10">
-            <a href="dashboard.php" class="p-3 bg-white rounded-xl border-4 border-c_secondary shadow-clay-card hover:-translate-y-1 hover:shadow-[0_12px_0_0_#FBCFE8] transition-all">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-c_primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-            </a>
             <div>
                 <h1 class="brand-font text-4xl font-extrabold text-c_primary">Relevance Tuning</h1>
                 <p class="font-bold text-pink-400 mt-1">Konfigurasi Bobot Hybrid Search AI</p>
@@ -152,6 +157,7 @@ try {
             </form>
         </div>
     </div>
+</main>
 
     <script>
         function updateVal(type) {
